@@ -20,7 +20,8 @@
 /storage/pail
 /storage/framework/cache/data/
 /storage/framework/sessions/
-/storage/framework/views/
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
 /bootstrap/cache/*.php
 /vendor
 Homestead.json
