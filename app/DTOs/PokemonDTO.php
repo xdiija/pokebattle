@@ -18,7 +18,9 @@ readonly class PokemonDTO implements JsonSerializable
         return new self(
             name: $pokemon['name'],
             hp: self::extractHp($pokemon),
-            image: $pokemon['sprites']['front_default'] ?? null,
+            image: $pokemon['sprites']['other']['official-artwork']['front_default']
+                ?? $pokemon['sprites']['front_default']
+                ?? null,
         );
     }
 
