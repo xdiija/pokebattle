@@ -25,6 +25,12 @@ Crie o arquivo `.env`:
 cp .env.example .env
 ```
 
+Se o frontend Vue estiver rodando em outra porta, ajuste:
+
+```env
+FRONTEND_URLS=http://localhost:5173,http://127.0.0.1:5173
+```
+
 Suba os containers:
 
 ```sh
