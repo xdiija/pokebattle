@@ -25,11 +25,12 @@ jobs:
       - name: Prepare environment
         run: |
           cp .env.example .env
+          mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
           php artisan key:generate
         env:
           APP_ENV: testing
           CACHE_DRIVER: array
-          SESSION_DRIVER: file
+          SESSION_DRIVER: array
           QUEUE_CONNECTION: sync
 
       - name: Run tests
@@ -37,5 +38,5 @@ jobs:
         env:
           APP_ENV: testing
           CACHE_DRIVER: array
-          SESSION_DRIVER: file
+          SESSION_DRIVER: array
           QUEUE_CONNECTION: sync
