@@ -2,12 +2,12 @@
 
 namespace App\Integrations\PokeApi;
 
-use App\Exceptions\PokemonNotFoundException;
 use App\Integrations\IntegrationClient;
-use Illuminate\Support\Facades\Http;
 
 class PokeApiClient extends IntegrationClient
 {
+    private const POKEMON_PAGE_SIZE = 100;
+
     public function __construct()
     {
         $this->baseUrl = config('services.pokeapi.base_url');
@@ -15,26 +15,34 @@ class PokeApiClient extends IntegrationClient
 
     public function findPokemon(string $name): array
     {
-        $name = $this->normalizeName($name);
-
-        $response = Http::baseUrl($this->baseUrl)
-            ->timeout($this->timeout)
-            ->acceptJson()
-            ->get("/pokemon/{$name}");
-
-        if ($response->status() === 404) {
-            throw new PokemonNotFoundException("Pokemon '{$name}' not found.");
-        }
-
-        if ($response->failed()) {
-            throw new \RuntimeException('Failed to connect to PokéAPI.');
-        }
-
-        return $response->json();
+        return parent::get("/pokemon/{$name}");
     }
 
-    private function normalizeName(string $name): string
+    public function listAllPokemons(): array
     {
-        return strtolower(trim($name));
+        $limit = self::POKEMON_PAGE_SIZE;
+        $offset = 0;
+        $response = parent::get('/pokemon', [
+            'limit' => $limit,
+            'offset' => $offset,
+        ]);
+        $total = $response['count'] ?? 0;
+        $results = $response['results'] ?? [];
+
+        $offset += $limit;
+
+        while ($offset < $total) {
+            $page = parent::get('/pokemon', [
+                'limit' => $limit,
+                'offset' => $offset,
+            ]);
+
+            $results = array_merge($results, $page['results'] ?? []);
+            $offset += $limit;
+        }
+
+        $response['results'] = $results;
+
+        return $response;
     }
 }
